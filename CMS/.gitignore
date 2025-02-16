@@ -1,0 +1,77 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+*.venv
+
+# Django secret settings (if any)
+.env
+*.env
+
+# Database and migrations
+db.sqlite3
+*.sqlite3
+*.db
+*.bak
+*.sql
+*.pyo
+*.pyd
+*.swp
+*.swo
+
+# Django migrations cache
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/*.pyc
+*/migrations/__pycache__/
+
+# Logs
+logs/
+*.log
+*.out
+*.err
+debug.log
+
+# Static and media files
+staticfiles/
+static/
+media/
+
+# Ignore compiled code
+*.so
+*.dll
+*.dylib
+
+# Ignore temporary files
+*.swp
+*.swo
+*.~*
+*.bak
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.iml
+
+# Ignore deployment-related files
+*.pid
+*.seed
+*.key
+*.crt
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Ignore testing-related files
+pytest_cache/
+.tox/

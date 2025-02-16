@@ -9,7 +9,10 @@ class Qualifications(models.Model):
     name = models.CharField(max_length=25)
     def __str__(self):
         return self.name
-
+class BloodGroup(models.Model):
+    blood = models.CharField(max_length=20)
+    def __str__(self):
+        return self.blood
 class Specialization(models.Model):
     specialization = models.CharField(max_length=25)
     def __str__(self):
@@ -40,39 +43,57 @@ class Staff(models.Model):
     l_name = models.CharField(max_length=25)
     email = models.EmailField()
     phone = models.CharField(max_length=10)
+    address = models.CharField(max_length=100,default="No")
     Qualification = models.ManyToManyField(Qualifications)
     DoB = models.DateField(validators=[staff_age])
-    salary = models.IntegerField() 
+    salary = models.IntegerField()
+    DoJ = models.DateField(default=date.today)
+    isActive = models.BooleanField(default=True) 
     def __str__(self):
         return self.f_name
-def doctor_age(value):
+def doctor_age(value): 
     today = date.today()
     age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
     if age < 25:
         raise ValidationError('The staff member must be at least 21 years old.')
 class Doctor(models.Model):
-    doc_id = models.AutoField(primary_key=True)
+    doc_id = models.CharField(primary_key=True,unique=True,max_length=25,blank=True)
     l_id = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True)
     f_name = models.CharField(max_length=25)
     l_name = models.CharField(max_length=25)
     email = models.EmailField()
     specialization = models.ForeignKey(Specialization,on_delete=models.SET_NULL,null=True)
     Qualification = models.ManyToManyField(Qualifications)
-    DoB = models.DateField(validators=[doctor_age]) 
+    DoB = models.DateField(validators=[doctor_age])
+    address = models.CharField(max_length=100,default="No") 
     fee = models.IntegerField()
     phone = models.CharField(max_length=10)
     Available = models.BooleanField(default=True)
     start_date = models.DateField(blank=True,null=True)
     end_date = models.DateField(blank=True,null=True)
+    DoJ = models.DateField(default=date.today)
     salary = models.IntegerField()
+    def save(self, *args, **kwargs):
+        if not self.doc_id:
+            last_doctor = Doctor.objects.order_by('-doc_id').first()
+            if last_doctor and last_doctor.doc_id.startswith('DR'):
+                last_id = int(last_doctor.doc_id[2:])  # Extract number part
+                self.doc_id = f"DR{last_id + 1}"  # Increment and format
+            else:
+                self.doc_id = "DR1"  # First entry
+        # Update availability based on start_date and end_date
+        today = date.today()
+        if self.start_date and self.end_date:
+            self.Available = not (self.start_date <= today <= self.end_date)
+        super().save(*args, **kwargs)
     def __str__(self):
         return self.f_name
 class Patient(models.Model):
-    name = models.CharField(max_length=25)
-    DoB = models.DateField()
+    name  = models.CharField(max_length=25)
+    DoB   = models.DateField()
     email = models.EmailField()
     phone = models.CharField(max_length=10)
-    blood = models.CharField(max_length=10)
+    bg    = models.ForeignKey(BloodGroup,on_delete=models.CASCADE)
     def __str__(self):
         return self.name
 def past_day(value):
@@ -86,7 +107,7 @@ class Appointment(models.Model):
     token = models.IntegerField(blank=True)
     DoA = models.DateField(validators=[past_day]) 
     time = models.ForeignKey(Time,on_delete=models.CASCADE)
-    status = models.BooleanField(default=False)
+    status = models.BooleanField(default=True)
     def save(self, *args, **kwargs):
         if not self.DoA:
             self.DoA = date.today()

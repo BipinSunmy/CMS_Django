@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Qualifications,Staff,Patient,Payment,Prescrible,Appointment,Billing,Medicine,Lab,Doctor,Specialization,Time
+from .models import Qualifications,Staff,Patient,Payment,Prescrible,Appointment,Billing,Medicine,Lab,Doctor,Specialization,Time,BloodGroup
+from rest_framework.authtoken.models import Token
 # Register your models here.
 
 admin.site.register(Qualifications)
@@ -14,3 +15,5 @@ admin.site.register(Lab)
 admin.site.register(Doctor)
 admin.site.register(Specialization)
 admin.site.register(Time)
+admin.site.register(BloodGroup)
+admin.site.register(Token)
